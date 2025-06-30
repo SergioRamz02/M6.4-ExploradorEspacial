@@ -40,3 +40,34 @@
 .read-the-docs {
   color: #888;
 }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0c10;
+  color: #c5c6c7;
+  padding: 2rem;
+}
+
+.container {
+  background: #1f2833;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #66fcf1;
+  color: #0b0c10;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
