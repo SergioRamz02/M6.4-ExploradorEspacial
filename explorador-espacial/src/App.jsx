@@ -1,12 +1,16 @@
 import React , {useState, useEffect, useMemo} from 'react'
 import './App.css'
-import Planeta from './Planeta';
+import BitacoraForm from './BitacoraForm';
+import ListaPlanetas from './ListaPlanetas';
 
 function App() {
   const [distancia, setDistancia] = useState(0);
   const [combustible, setCombustible] = useState(100);
   const [estadoNave, setEstadoNave] = useState("En órbita");
-  const [planetasVisitados, setPlanetasVisitados] = useState([]);
+  const [planetasVisitados, setPlanetasVisitados] = useState(() => {
+    const datos = localStorage.getItem('planetas');
+    return datos ? JSON.parse(datos) : [];
+  });
 
   useEffect(() => {
     console.log("¡El panel está listo!"); // Montaje
@@ -26,24 +30,26 @@ function App() {
     console.log("¡Combustible actualizado!"); // Actualización
   }, [combustible]);
 
+  useEffect(() => {
+    localStorage.setItem('planetas', JSON.stringify(planetasVisitados));
+  }, [planetasVisitados]);
+
   const mensajeEstado = useMemo(() => {
-    switch (estadoNave) {
-      case "Aterrizando":
-        return "🛬 La nave está aterrizando...";
-      case "En órbita":
-        return "🛰️ Nave en órbita";
-      default:
-        return "🔄 Estado desconocido";
-    }
+    return estadoNave === 'Aterrizando'
+      ? '🛬 La nave está aterrizando...'
+      : '🛰️ Nave en órbita';
   }, [estadoNave]);
 
-  // Función para aterrizar en un planeta
-  const aterrizar = () => {
-    setEstadoNave("Aterrizando");
-    const nombrePlaneta = `Planeta-${planetasVisitados.length + 1}`;
-    setPlanetasVisitados([...planetasVisitados, nombrePlaneta]);
+  const agregarPlaneta = (planeta) => {
+    setEstadoNave('Aterrizando');
+    setPlanetasVisitados([...planetasVisitados, planeta]);
   };
 
+  const eliminarPlaneta = (index) => {
+    const actualizados = [...planetasVisitados];
+    actualizados.splice(index, 1);
+    setPlanetasVisitados(actualizados);
+  };
 
   return (
     <>
@@ -54,16 +60,10 @@ function App() {
       <p><strong>Combustible:</strong> {combustible}%</p>
       <p><strong>Estado:</strong> {mensajeEstado}</p>
 
-      <button onClick={aterrizar} disabled={estadoNave === "Aterrizando"}>
-        Aterrizar
-      </button>
-
-      <h2>Planetas Visitados</h2>
-      <ul>
-        {planetasVisitados.map((nombre, index) => (
-          <Planeta key={index} nombre={nombre} />
-        ))}
-      </ul>
+      <BitacoraForm onAgregarPlaneta={agregarPlaneta} />
+      
+      <h2>🌌 Planetas Registrados</h2>
+      <ListaPlanetas planetas={planetasVisitados} onEliminar={eliminarPlaneta} />
     </div>
     </>
   )
